@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -36,12 +35,16 @@ public class CountryCodeConverter {
             List<String> lines = Files.readAllLines(Paths.get(getClass()
                     .getClassLoader().getResource(filename).toURI()));
 
-            for (String line : lines) {
-                String[] parts = line.split("\t");
-                String code = parts[2].toLowerCase();
-                String country = parts[0];
-                codeToCountry.put(code, country);
-                countryToCode.put(country, code);
+            for (int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
+
+                String[] values = line.split("\t");
+
+                String country = values[0];
+                String code = values[2];
+
+                codeToCountry.put(country, code.toLowerCase());
+                countryToCode.put(code.toLowerCase(), country);
             }
         }
         catch (IOException | URISyntaxException ex) {
@@ -55,7 +58,7 @@ public class CountryCodeConverter {
      * @return the name of the country corresponding to the code
      */
     public String fromCountryCode(String code) {
-        return codeToCountry.get(code);
+        return countryToCode.get(code);
     }
 
     /**
@@ -64,7 +67,7 @@ public class CountryCodeConverter {
      * @return the 3-letter code of the country
      */
     public String fromCountry(String country) {
-        return countryToCode.get(country);
+        return codeToCountry.get(country);
     }
 
     /**
